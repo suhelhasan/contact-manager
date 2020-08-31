@@ -1,5 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
   StyleSheet,
   Text,
@@ -15,15 +15,56 @@ import { Entypo } from "@expo/vector-icons";
 export default function Home({ navigation }) {
   let [state, setState] = useState([]);
 
-  const didMountRef = useRef(false)
+  // const didMountRef = useRef(false)
+  // useEffect(() => {
+  //   if (didMountRef.current) {
+  //     doStuff()
+  //   } else didMountRef.current = true
+  // });
+
+  let getAllContact = async () => {
+    await AsyncStorage.getAllKeys()
+      .then((keys) => {
+        return AsyncStorage.multiGet(keys).then((result) => {
+          setState(
+            result.sort((a, b) => {
+              if (JSON.parse(a[1]).firstName < JSON.parse(b[1]).firstName) {
+                return -1;
+              }
+              if (JSON.parse(a[1]).firstName > JSON.parse(b[1]).firstName) {
+                return 1;
+              }
+              return 0;
+            })
+          );
+        });
+      })
+      .catch((err) => console.log(err));
+  };
+
   useEffect(() => {
-    if (didMountRef.current) {
-      doStuff()
-    } else didMountRef.current = true
-  });
+    const unsubscribe = navigation.addListener("focus", () => {
+      getAllContact();
+    });
+    return unsubscribe;
+  }, [navigation]);
+  console.log("hello danish", state);
 
   return (
     <View style={styles.container}>
+      <FlatList
+        data={state}
+        renderItem={({ item }) => {
+          contact = JSON.parse(item[1]);
+          return (
+            <TouchableOpacity>
+              <Text>Suhel</Text>
+            </TouchableOpacity>
+          );
+        }}
+        keyExtractor={(item, index) => item[0].toString()}
+      />
+
       <TouchableOpacity
         style={styles.floatButton}
         onPress={() => navigation.navigate("AddContactScreen")}
