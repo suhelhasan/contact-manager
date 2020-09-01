@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   FlatList,
   AsyncStorage,
+  Alert,
 } from "react-native";
 
 import { Card } from "native-base";
@@ -48,7 +49,6 @@ export default function Home({ navigation }) {
     });
     return unsubscribe;
   }, [navigation]);
-  console.log("hello danish", state);
 
   return (
     <View style={styles.container}>
@@ -57,8 +57,26 @@ export default function Home({ navigation }) {
         renderItem={({ item }) => {
           contact = JSON.parse(item[1]);
           return (
-            <TouchableOpacity>
-              <Text>Suhel</Text>
+            <TouchableOpacity
+              onPress={() => {
+                navigation.navigate("ViewContactScreen", {
+                  key: item[0].toString(),
+                });
+              }}
+            >
+              <Card style={styles.listItem}>
+                <View style={styles.iconContainer}>
+                  <Text style={styles.contactIcon}>
+                    {contact.firstName[0].toUpperCase()}
+                  </Text>
+                </View>
+                <View style={styles.infoContainer}>
+                  <Text style={styles.infoText}>
+                    {contact.firstName} {contact.lastName}
+                  </Text>
+                  <Text style={styles.infoText}>{contact.phone}</Text>
+                </View>
+              </Card>
             </TouchableOpacity>
           );
         }}
